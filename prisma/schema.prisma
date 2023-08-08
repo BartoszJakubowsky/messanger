@@ -58,24 +58,25 @@ model User {
     sessions      Session[]
 
     // Non-Next Auth
-    friends       Friend[]
     conversations Conversation[]
+    Message       Message[]
 }
 
 model Conversation {
-    id           Int       @id @default(uuid())
-    participants User[] //
+    id           String    @id @default(uuid())
+    participants User[]
     messages     Message[]
+    updatedAt    DateTime  @updatedAt
 }
 
 model Message {
-    id             Int          @id @default(uuid())
+    id             String       @id @default(uuid())
+    userId         String
+    conversationId String
     content        String
     createdAt      DateTime     @default(now())
-    sender         User         @relation(fields: [senderId], references: [id])
-    senderId       Int
+    user           User         @relation(fields: [userId], references: [id])
     conversation   Conversation @relation(fields: [conversationId], references: [id])
-    conversationId Int
 }
 
 model VerificationToken {

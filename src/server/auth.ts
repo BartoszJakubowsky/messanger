@@ -9,6 +9,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 import FaceBookProvider from 'next-auth/providers/facebook';
+import { CredentialsProvider } from "next-auth/providers";
 
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
@@ -55,18 +56,32 @@ export const authOptions: NextAuthOptions = {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
-     GoogleProvider({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    }),
-    GitHubProvider({
-    clientId: process.env.GITHUB_CLIENT_ID,
-    clientSecret: process.env.GITHUB_CLIENT_SECRET
-    }),
-    FaceBookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET
-      })
+    //  GoogleProvider({
+    // clientId: process.env.GOOGLE_CLIENT_ID,
+    // clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    // }),
+    // GitHubProvider({
+    // clientId: process.env.GITHUB_CLIENT_ID,
+    // clientSecret: process.env.GITHUB_CLIENT_SECRET
+    // }),
+    // FaceBookProvider({
+    //   clientId: process.env.FACEBOOK_CLIENT_ID,
+    //   clientSecret: process.env.FACEBOOK_CLIENT_SECRET
+    //   }),
+      // CredentialsProvider({
+      //   name: 'Credentials',
+      //   credentials: {
+      //     name: {
+      //       label: "Name",
+      //       type: 'Text',
+      //       placeholder: 'Enter your name',
+      //     },
+      //   },
+      //   async authorize(credentials, _req) {
+      //     const user = {id: 1, name: credentials?.name ?? 'null'}
+      //     return user;
+      //   },
+      // }),
     /**
      * ...add more providers here.
      *

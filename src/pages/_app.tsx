@@ -1,6 +1,6 @@
 import { type Session } from "next-auth";
 import Head from "next/head";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
@@ -11,7 +11,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
 
-
   return (
     <SessionProvider session={session}>
       <Head>
@@ -20,7 +19,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen flex flex-grow bg-blue-300 dark:bg-indigo-950 dark:text-gray-200  ">
-        <Sidebar/>
+        {<Sidebar/>}
         <Component {...pageProps} />
       </main>
     </SessionProvider>
