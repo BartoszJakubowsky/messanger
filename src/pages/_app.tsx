@@ -19,11 +19,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen flex flex-grow bg-blue-300 dark:bg-indigo-950 dark:text-gray-200  ">
-        {<Sidebar/>}
+        <Sidebar/>
         <Component {...pageProps} />
       </main>
     </SessionProvider>
   );
 };
-
 export default api.withTRPC(MyApp);

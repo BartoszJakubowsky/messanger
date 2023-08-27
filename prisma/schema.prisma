@@ -59,24 +59,28 @@ model User {
 
     // Non-Next Auth
     conversations Conversation[]
-    Message       Message[]
+    messages      Message[]
+    theme         String         @default("light")
 }
 
 model Conversation {
     id           String    @id @default(uuid())
     participants User[]
     messages     Message[]
+    createdAt    DateTime  @default(now())
     updatedAt    DateTime  @updatedAt
 }
 
 model Message {
     id             String       @id @default(uuid())
+    content        String
     userId         String
     conversationId String
-    content        String
     createdAt      DateTime     @default(now())
-    user           User         @relation(fields: [userId], references: [id])
     conversation   Conversation @relation(fields: [conversationId], references: [id])
+    user           User         @relation(fields: [userId], references: [id])
+
+    @@unique([id, createdAt])
 }
 
 model VerificationToken {

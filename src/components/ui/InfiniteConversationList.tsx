@@ -1,47 +1,47 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
-import { api } from "~/utils/api";
-import type {ReactNode} from 'react';
+import {motion as m} from 'framer-motion';
 import Image from "next/image";
-import {motion as m, AnimatePresence} from 'framer-motion';
-
-
-interface ConversationProps {
-  content: string;
-  createdAt: Date;
-  user: { id: string; image: string | null; name: string | null };
-  children: ReactNode;
+interface UserProps {
+      id: string,
+      name: string | null;
+      image: string ;
 }
 
-interface InfiniteTweetListProps {
+interface ConversationsProps {
+ conversationId: string, 
+ lastMessage: {content: string, user: UserProps},
+ createdAt?: string,
+ participants: UserProps[];
+}
+
+interface InfiniteConversationsListProps {
   isLoading: boolean;
   isError: boolean;
   hasMore: boolean | undefined;
   fetchNewData: () => Promise<unknown>;
-  data?: ConversationProps[];
-  noData? : string;
+  data?: ConversationsProps[];
 }
 
-export default function InfiniteTweetList({
+export default function InfiniteConversationsList({
   data,
   isError,
   isLoading,
   fetchNewData,
   hasMore,
-  noData,
-}: InfiniteTweetListProps) {
+}: InfiniteConversationsListProps) {
+
   if (isLoading) return <h1>Loading...</h1>;
 
   if (isError) return <h1>Error</h1>;
 
-  if (data == null) return null;
-
   if (data == null || data.length == 0) {
     return (
-      <h2 className="my-4 text-center text-2xl text-gray-500">{noData}</h2>
+      <h2 className="my-4 text-center text-2xl text-gray-500">no data</h2>
     );
   }
+
+
   return (
     <InfiniteScroll
       dataLength={data.length}
@@ -49,11 +49,22 @@ export default function InfiniteTweetList({
       hasMore={hasMore ?? false}
       loader={"Loading ..."}
     >
-      {data.map((dataToRender) => {
+        <p>cos tam cos tam</p>
+      {data.map((dataToRender, index) => {
+
+        // const truncateUsers = (text: string, maxLength: number) => {
+        //     if (text.length <= maxLength) {
+        //     return text;
+        //     }
+        //     return text.slice(0, maxLength) + '...';
+        // };
         return (
-          <ConversationCard key={dataToRender.id} {...dataToRender}>
-            {dataToRender.content}
-          </ConversationCard>
+          <ConversationPanel
+            key={dataToRender.conversationId}
+            conversationId={dataToRender.conversationId}
+            lastMessage={dataToRender.lastMessage}
+            participants={dataToRender.participants}
+          />
         );
       })}
     </InfiniteScroll>
@@ -61,37 +72,48 @@ export default function InfiniteTweetList({
 }
 
 
-function ConversationCard() {
-  const user = {
-    name: 'Some name',
-    image: '',
-    latest: 'siem a siema siema siema siema siema a siema siema siema siema siemaa siema siema siema siema siema siema siema siema siema siema siema siema',
-  };
 
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) {
-      return text;
-    }
-    return text.slice(0, maxLength) + '...';
-  };
+function ConversationPanel ({conversationId, lastMessage, createdAt, participants} : ConversationsProps) {
 
-  return (
-    <m.div 
-    initial={{opacity:0}} 
-    animate={{opacity:1}} 
-    transition={{duration: 0.2}} 
-    exit={{opacity:0}} 
-    className="flex-row h-20 justify-stretch items-center gap-2 p-1 overflow-hidden bg-pink-300 dark:bg-indigo-900 rounded-md cursor-pointer flex">
-      <div className="rounded-full bg-yellow-200 w-20 h-16">{user.image}</div>
-      <div className="flex flex-col">
-        <h3 className="w-full text-lg">{user.name}</h3>
-        {user.latest && <p className="text-gray-400">{truncateText(user.latest, 50)}</p>}
-      </div>
-    </m.div>
-  );
+   const truncateText = (text: string, maxLength: number) => {
+        if (text.length <= maxLength) {
+          return text;
+        }
+        return text.slice(0, maxLength) + '...';
+      };
+    return (
+      <Link href={`/conversation/${conversationId}`}>
+        <m.div 
+        initial={{opacity:0}} 
+        animate={{opacity:1}} 
+        transition={{duration: 0.2}} 
+        exit={{opacity:0}} 
+        className="flex-col h-20 p-2 justify-stretch items-start gap-1 overflow-hidden bg-pink-300 dark:bg-indigo-900 rounded-md cursor-pointer flex">
+          <div className="w-full p-1 flex gap-2">
+            {participants.map((user, index) => {
+              //if max users to show
+              if (index == 2)
+              return (
+                <p>
+                  And {`${participants.length - index}`} more users...
+                </p>
+              )
+              return (
+                <div key={user.id} className="flex gap-2 overflow-hidden items-center">
+                  <Image className="rounded-full w-6 h-6" src={user.image}  width={300} height={300} alt='user image'/>
+                  <h1>{user.name}</h1>
+                </div>
+              )
+            })}
+           
+          </div>
+          <div className="w-full flex gap-1 ml-2 text-sm opacity-80">
+            <p>{lastMessage.user.name} :</p>
+            <p>{truncateText(lastMessage.content, 32)}</p>
+          </div>
+        </m.div>
+      </Link>
+    )
 }
-
-
-
 
 
