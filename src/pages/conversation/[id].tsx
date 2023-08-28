@@ -25,7 +25,6 @@ export default function ConversationPage() {
         <RecentMessages conversationId={conversation.id}/>
         <TextArea conversationId={conversation.id}/>
         </div>
-
     )
 
 
@@ -36,20 +35,14 @@ function TextArea({conversationId}: {conversationId: string}) {
   
   const [text, setText] = useState('');
   const [error, setError] = useState(false);
-  // const createMessage = api.conversation.createMessage.useMutation({
-  //   onSuccess: (newMessage) => {
-  //     console.log(newMessage);
-  //     setText('');
-  //   }
-  // })
-  // const handleSubmit = () => createMessage.mutate({conversationId, content: text});
+  const createMessage = api.conversation.createMessage.useMutation({
+    onSuccess: (newMessage) => {
+      console.log(newMessage);
+      setText('');
+    }
+  })
+  const handleSubmit = () => createMessage.mutate({conversationId, content: text});
 
-  const handleSubmit = () => createMessage();
-  const createMessage = () => {
-    // socket.emit('sendMessage',text)
-    setText('');
-  }
-  
   return (
     <div className="bg-pink-500 dark:bg-indigo-700 w-full flex p-2 gap-2 md:h-24 h-10 max-h-[100px] items-stretch self-end">
     <textarea 

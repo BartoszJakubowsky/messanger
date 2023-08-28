@@ -1,6 +1,8 @@
+import { type ReactNode } from "react"
+
 interface ButtonProps {
     onClick : () => void
-    text? : string,
+    text? : string | ReactNode,
     className? : string
 
 }

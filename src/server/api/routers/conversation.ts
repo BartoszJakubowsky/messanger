@@ -14,6 +14,9 @@ export const conversationRouter = createTRPCRouter({
     .input(z.object({ content: z.string() }))
     .query(async ({ input: { content }, ctx }) => {
 
+      if (content === '')
+      return await ctx.prisma.user.findMany();
+
       const matchedUsers = await ctx.prisma.user.findMany({
         where: {
           OR: [

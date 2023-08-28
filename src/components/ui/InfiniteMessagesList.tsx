@@ -37,7 +37,7 @@ export default function InfiniteMessagesList({
 
   if (data == null || data.length == 0) {
     return (
-      <h2 className="my-4 text-center text-2xl text-gray-500">{noData}</h2>
+      <h2 className="my-4 text-2xl text-gray-500">{noData}</h2>
     );
   }
 

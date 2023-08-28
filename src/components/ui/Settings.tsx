@@ -1,4 +1,4 @@
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Button from "./button";
 import InputText from "../inputs/inputText";
 import { useState } from "react";
@@ -47,6 +47,11 @@ export default function Settings({isOpen, setIsOpen, setOpenModal, user, setUser
             <Button onClick={() => handleSaveClick()} className="ml-auto" text={'Save changes'}/>
              </div>
              <div className="p-2 flex flex-col gap-2 ">
+                <Button
+                onClick={() => void signOut()}
+                text="Sing out"
+                className="w-fit"
+                />
                 <label htmlFor="input" className="text-lg font-semibold">
                     Your name
                 </label>

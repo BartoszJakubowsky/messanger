@@ -37,7 +37,7 @@ export default function InfiniteConversationsList({
 
   if (data == null || data.length == 0) {
     return (
-      <h2 className="my-4 text-center text-2xl text-gray-500">no data</h2>
+      <h2 className="my-4 text-start text-2xl text-gray-500">no data</h2>
     );
   }
 
@@ -82,13 +82,13 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
         return text.slice(0, maxLength) + '...';
       };
     return (
-      <Link href={`/conversation/${conversationId}`}>
+      <Link href={`/conversation/${conversationId}`} className="w-full">
         <m.div 
         initial={{opacity:0}} 
         animate={{opacity:1}} 
-        transition={{duration: 0.2}} 
+        transition={{duration: 0.2}}  
         exit={{opacity:0}} 
-        className="flex-col h-20 p-2 justify-stretch items-start gap-1 overflow-hidden bg-pink-300 dark:bg-indigo-900 rounded-md cursor-pointer flex">
+        className="flex-col w-full h-20 p-2 justify-stretch items-start gap-1 overflow-hidden bg-pink-300 dark:bg-indigo-900 rounded-md cursor-pointer flex">
           <div className="w-full p-1 flex gap-2">
             {participants.map((user, index) => {
               //if max users to show

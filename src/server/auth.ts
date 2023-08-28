@@ -24,6 +24,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
+      verified: boolean;
       // ...other properties
       // role: UserRole;
     };
@@ -56,10 +57,10 @@ export const authOptions: NextAuthOptions = {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
-    //  GoogleProvider({
-    // clientId: process.env.GOOGLE_CLIENT_ID,
-    // clientSecret: process.env.GOOGLE_CLIENT_SECRET
-    // }),
+     GoogleProvider({
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET
+    })
     // GitHubProvider({
     // clientId: process.env.GITHUB_CLIENT_ID,
     // clientSecret: process.env.GITHUB_CLIENT_SECRET
@@ -93,7 +94,7 @@ export const authOptions: NextAuthOptions = {
      */
   ],
   // pages: {
-  //   s
+  //   verifyRequest: '/auth/verify-request',
   // }
 };
 
