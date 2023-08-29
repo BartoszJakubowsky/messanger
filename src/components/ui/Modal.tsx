@@ -68,8 +68,10 @@ export default function Modal({modalText, yesButton, noButton, onClick, isOpen, 
             exit = {{ opacity: 0, scale: 0.75 }}
             className='relative w-80 rounded-sm h-60 bg-pink-600 dark:bg-indigo-800 mb-3/4 background p-4 overflow-hidden text-lg flex flex-wrap flex-col'>
             {modalText}
-            <Button onClick={handleClickYes} text={yesButton} className='!w-fit !self-end mt-auto mb-2'/>
-            {noButton && <Button onClick={handleClickNo} text={noButton} className='!w-fit !self-end mt-auto mb-2 dark:bg-red-950 bg-red-400'/>}
+            <div className='flex flex-col gap-2 !self-end mt-auto w-28'>
+            <Button onClick={handleClickYes} text={yesButton} className='w-full'/>
+            {noButton && <Button onClick={handleClickNo} text={noButton} className='dark:bg-red-950 bg-red-400 w-full'/>}
+            </div>
             </m.div>
             </m.div>
     :

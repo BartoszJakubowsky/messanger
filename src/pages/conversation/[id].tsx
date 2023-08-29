@@ -11,7 +11,7 @@ export default function ConversationPage() {
     if (typeof id != 'string') 
       return <h3>{"Loading [id] page ..."}</h3>        
 
-    const {data: conversation, isError, isLoading} = api.conversation.getConversation.useQuery({userId: id})
+    const {data: conversation, isError, isLoading} = api.conversation.getConversation.useQuery({conversation: id})
 
     if (isLoading)
         return <h3>Loading conversation...</h3>

@@ -61,6 +61,7 @@ model User {
     conversations Conversation[]
     messages      Message[]
     theme         String         @default("light")
+    description   String         @default("Hey, im new Dumb Messanger user!")
 }
 
 model Conversation {

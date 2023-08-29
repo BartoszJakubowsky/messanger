@@ -10,33 +10,9 @@ import {
 import { prisma } from "~/server/db";
 
 export const conversationRouter = createTRPCRouter({
-    matchedUsers: protectedProcedure
-    .input(z.object({ content: z.string() }))
-    .query(async ({ input: { content }, ctx }) => {
-
-      if (content === '')
-      return await ctx.prisma.user.findMany();
-
-      const matchedUsers = await ctx.prisma.user.findMany({
-        where: {
-          OR: [
-            {
-              name: {
-                contains: content,
-              },
-            },
-            {
-              name: {
-                equals: content,
-              },
-            },
-          ],
-        },
-      });
-      return matchedUsers;
-    }),
+    
     getConversation: protectedProcedure
-    .input(z.object({ userId: z.string() }))
+    .input(z.object({ userId: z.string().optional(), conversationId: z.string().optional() }))
     .query(async ({ input: { userId }, ctx }) => {
        
         // const conversation = await ctx.prisma.conversation.findUnique({
@@ -52,7 +28,7 @@ export const conversationRouter = createTRPCRouter({
         // return conversation;
         const currentUserId = ctx.session?.user.id;
         const user1Id = currentUserId;
-        const user2Id = user1Id;
+        const user2Id = userId;
         // Check if a conversation between the two users already exists
         const existingConversation = await ctx.prisma.conversation.findFirst({
             where: {
@@ -146,6 +122,7 @@ export const conversationRouter = createTRPCRouter({
     .query(async ({input: {limit = 10 , cursor }, ctx }) => {
 
       const userId = ctx.session.user.id;
+
       const recentConversations = await ctx.prisma.user.findUnique({
         where: { id: userId },
       }).conversations({

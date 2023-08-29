@@ -48,8 +48,8 @@ export default function InfiniteConversationsList({
       next={fetchNewData}
       hasMore={hasMore ?? false}
       loader={"Loading ..."}
+      className="mt-2"
     >
-        <p>cos tam cos tam</p>
       {data.map((dataToRender, index) => {
 
         // const truncateUsers = (text: string, maxLength: number) => {

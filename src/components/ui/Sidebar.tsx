@@ -1,6 +1,5 @@
-import { useState } from "react"
-import InfiniteScroll from 'react-infinite-scroll-component';
-import {motion as m, AnimatePresence} from 'framer-motion';
+import { useEffect, useState } from "react"
+import {motion as m} from 'framer-motion';
 import { api } from "~/utils/api";
 import ConversationUser from './ConversationUser'
 import { useSession } from "next-auth/react";
@@ -10,39 +9,70 @@ import Settings from "./Settings";
 import Button from "./button";
 import Modal from "./Modal";
 import {GoSearch, GoX} from 'react-icons/go';
+import { useRouter } from "next/router";
 export default function Sidebar() {
     
     const { data: sessionData } = useSession();
-    
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(true);
     const [search, setSearch] = useState('')
-    const [openSearch, setOpenSearch] = useState(true);
+    const [openSearch, setOpenSearch] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
+    const [modalSave, setModalSave] = useState(false);
+    const [modalDelete, setModalDelete] = useState(false);
 
     const [user, setUser] = useState(sessionData?.user);
+    
+
+    const mutateUserSave =  api.userRouter.updateUser.useMutation({
+      onSuccess: (newUser) => {
+        setUser(newUser)
+        router.reload();
+      }
+    })
+
+    const mutateUserDelete = api.userRouter.deleteUser.useMutation({
+      onSuccess: () => {
+        router.reload();
+      }
+    });
+    
+    useEffect(()=> {
+        setUser(sessionData?.user)
+    }, [sessionData?.user])
+
+    if (!user)
+      return;
+
     const handleMenuClick = () => setOpenSettings(!openSettings);
 
     if (sessionData == undefined)
       return false
     
+  
+
     const saveChanges = () => {
-      console.log(user);
+      if (user?.name)
+        mutateUserSave.mutate({name: user.name, description: user.description})
+    }
+    const deleteUser = () => {
+        mutateUserDelete.mutate();
     }
     const handleOpenSearch = () => setOpenSearch(!openSearch)
+
     return (
         <>
-        <Modal isOpen={openModal} setIsOpen={setOpenModal} onClick={saveChanges}  modalText="Are you sure you want to save changes?" noButton="No, go back" yesButton="Yes, save" onlyButton={false}/>
-        <button onClick={()=> setIsOpen(!isOpen)} className="absolute left-1 top-1 w-3 h-3 rounded-lg text-white">Menu</button>
-        {/* <nav className={`${isOpen? 'translate-x-0' : ' -translate-x-full'} absolute left-0 right-0 transition-all bg-blue-900 h-full w-full md:w-2/3 duration-200 ease-in-out`}> */}
-        <nav className={`${isOpen? 'sm:w-[600px] w-full  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
-          <div className="max-w-[350px] min-w-[350px] flex flex-wrap  items-start">
-                <div className="flex flex-row justify-stretch items-center gap-2 overflow-hidden mb-2 ">
-                    <button className="bg-indigo-950 w-1/5 justify-self-start p-2 rounded-sm" onClick={()=> setIsOpen(!isOpen)}>Back</button>  
-                    <h1 className=" text-xl text-slate-100 w-full bg-pink-300 dark:bg-indigo-500 p-1 rounded-sm">Your dumb messanger</h1>
-                    <Button onClick={handleMenuClick} text={'Settings'}/>
+        <Modal isOpen={modalSave} setIsOpen={setModalSave} onClick={saveChanges}  modalText="Are you sure you want to save changes?" noButton="No, go back" yesButton="Yes, save" onlyButton={false}/>
+        <Modal isOpen={modalDelete} setIsOpen={setModalDelete} onClick={deleteUser}  modalText="Are you sure you want to delete the account?" noButton="No, go back" yesButton="Yes, delete" onlyButton={false}/>
+        <Button onClick={()=> setIsOpen(!isOpen)} text="Menu" className="absolute left-1 top-1"/>
+        <nav className={`${isOpen? 'w-full md:w-[615px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
+          <div className="max-w-[350px] min-w-[350px]">
+                <div className="flex flex-row justify-between mb-2">
+                    <Button text='Back' className="w-20" onClick={()=>setIsOpen(!isOpen)}/>
+                    <h1 className=" pointer-events-none text-lg text-slate-100 flex bg-pink-300 dark:bg-indigo-600 p-3 rounded-sm">Dumb messanger</h1>
+                    <Button onClick={handleMenuClick} className="w-20" text={'Settings'}/>
                 </div>
-                <div className="flex justify-stretch gap-2 overflow-hidden w-full pr-2">
+                <div className="flex justify-stretch gap-2 overflow-hidden w-full">
                     <div className="w-full flex gap-2">
                         {!openSearch 
                         ? <Button className="w-10 flex items-center justify-center" onClick={handleOpenSearch} text={<GoSearch/>}/>
@@ -51,20 +81,28 @@ export default function Sidebar() {
                         <InputText 
                         value={search}
                         onChange={(event)=>setSearch(event.target.value)}
-                        className="w-full bg-indigo-400 focus-within:bg-indigo-200 text-white focus:placeholder:text-slate-100 transition-colors duration-200 placeholder:text-slate-200 p-1" 
+                        className="w-full rounded-xl"
                         placeholder="Search for someone"/>
                         </>
                         }
                     </div>
                 </div>
             {!openSearch ? 
+            
             <RecentConversations/>
             :
-            <m.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration: 0.2}} exit={{opacity:0}} className="flex gap-1 flex-wrap p-2 pr-4">
+            <m.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration: 0.2}} exit={{opacity:0}} className="flex justify-start my-4 gap-1 flex-wrap">
                 <GetUser userName={search}/>
             </m.div>
             }
-            <Settings isOpen={openSettings} setIsOpen={setOpenSettings}  setOpenModal={setOpenModal} user={user} setUser={setUser}/>
+            <Settings 
+              setIsOpen={setOpenSettings}
+              isOpen={openSettings}
+              setModalSave={setModalSave}
+              setModalDelete={setModalDelete}
+              user={sessionData.user} 
+              setUser={setUser}
+              />
             </div>
         </nav>
         </>
@@ -73,8 +111,9 @@ export default function Sidebar() {
 
 function GetUser({ userName }: { userName: string}) {
 
-  const [stopSeachring, setStopSearching] = useState(false);
-  const { data: matchedUsers, isLoading, isError } = api.conversation.matchedUsers.useQuery({content: userName});
+  const { data: matchedUsers, isLoading, isError } = api.userRouter.matchedUsers.useQuery({content: userName});
+
+  if (isError) return <div>Error, pls try later</div>
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -101,8 +140,8 @@ function RecentConversations() {
       data={conversations.data?.pages.flatMap(conversationsArr => conversationsArr.conversations)}
       isError={conversations.isError}
       isLoading={conversations.isLoading}
-      hasMore={conversations.hasNextPage}
-      fetchNewData={conversations.fetchNextPage}
+  hasMore={conversations.hasNextPage}
+    fetchNewData={conversations.fetchNextPage}
     />
   )
 }
