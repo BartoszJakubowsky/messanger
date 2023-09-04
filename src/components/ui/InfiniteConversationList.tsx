@@ -10,7 +10,7 @@ interface UserProps {
 
 interface ConversationsProps {
  conversationId: string, 
- lastMessage: {content: string, user: UserProps},
+ lastMessage?: {content: string, user: UserProps},
  createdAt?: string,
  participants: UserProps[];
 }
@@ -48,16 +48,12 @@ export default function InfiniteConversationsList({
       next={fetchNewData}
       hasMore={hasMore ?? false}
       loader={"Loading ..."}
-      className="mt-2"
+      className="mt-2 flex flex-wrap gap-2"
     >
       {data.map((dataToRender, index) => {
-
-        // const truncateUsers = (text: string, maxLength: number) => {
-        //     if (text.length <= maxLength) {
-        //     return text;
-        //     }
-        //     return text.slice(0, maxLength) + '...';
-        // };
+        if (dataToRender.participants.length == 0)
+          return 
+        
         return (
           <ConversationPanel
             key={dataToRender.conversationId}
@@ -89,7 +85,7 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
         transition={{duration: 0.2}}  
         exit={{opacity:0}} 
         className="flex-col w-full h-20 p-2 justify-stretch items-start gap-1 overflow-hidden bg-pink-300 dark:bg-indigo-900 rounded-md cursor-pointer flex">
-          <div className="w-full p-1 flex gap-2">
+          <div className="p-1 h-8 overflow-hidden flex gap-2">
             {participants.map((user, index) => {
               //if max users to show
               if (index == 2)
@@ -99,7 +95,7 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
                 </p>
               )
               return (
-                <div key={user.id} className="flex gap-2 overflow-hidden items-center">
+                <div key={user.id} className="flex min-w-fit gap-2 overflow-hidden items-center">
                   <Image className="rounded-full w-6 h-6" src={user.image}  width={300} height={300} alt='user image'/>
                   <h1>{user.name}</h1>
                 </div>
@@ -107,10 +103,10 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
             })}
            
           </div>
-          <div className="w-full flex gap-1 ml-2 text-sm opacity-80">
+          {lastMessage && <div className="w-full flex gap-1 ml-2 text-sm opacity-80">
             <p>{lastMessage.user.name} :</p>
             <p>{truncateText(lastMessage.content, 32)}</p>
-          </div>
+          </div>}
         </m.div>
       </Link>
     )

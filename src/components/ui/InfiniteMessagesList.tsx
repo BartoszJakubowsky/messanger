@@ -19,6 +19,7 @@ interface InfiniteMessagesListProps {
   fetchNewData: () => Promise<unknown>;
   data?: MessagesProps[];
   noData? : string;
+  ablyMessages: MessagesProps[]
 }
 
 export default function InfiniteMessagesList({
@@ -28,6 +29,7 @@ export default function InfiniteMessagesList({
   fetchNewData,
   hasMore,
   noData,
+  ablyMessages
 }: InfiniteMessagesListProps) {
 
   if (isLoading) return <h1>Loading...</h1>;
@@ -41,13 +43,31 @@ export default function InfiniteMessagesList({
     );
   }
 
+  if (ablyMessages)
+  {
+    if (!data.some(message => message.id == ablyMessages.id))
+      data = [ablyMessages, ...data]
+
+  }
+    
 
   return (
+    <div id="scrollableDiv" 
+    style={{
+      height: '100vh',
+      overflow: 'auto',
+      display: "flex",
+      flexDirection: "column-reverse"
+    }}
+    >
     <InfiniteScroll
       dataLength={data.length}
       next={fetchNewData}
+      inverse={true}
       hasMore={hasMore ?? false}
+      style={{ display: "flex", flexDirection: "column-reverse" }}
       loader={"Loading ..."}
+      scrollableTarget="scrollableDiv"
     >
       {data.map((dataToRender, index) => {
         return (
@@ -57,8 +77,9 @@ export default function InfiniteMessagesList({
           content={dataToRender.content} 
           index={index}/>
         );
-      }).reverse()}
+      })}
     </InfiniteScroll>
+    </div>
   );
 }
 
@@ -70,13 +91,14 @@ export default function InfiniteMessagesList({
 function Message ({userId, content, index}: {userId: string, content: string, index: number}) {
 
     const currentUser = useSession();
+    const currentUserId = currentUser.data?.user.id;
     return (
       <m.div 
       initial={{opacity: 0}}
       animate={{opacity: 1}}
-      transition={{delay: index *0.2}}
-      className={`${currentUser.data?.user.id === userId? 'justify-start' : 'justify-end'} w-full h-fit flex p-4`}>
-        <p className="max-w-[40%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 rounded-md">
+      transition={{delay: index *0.05}}
+      className={`${currentUserId === userId? 'justify-end' : 'justify-start'} w-full h-fit flex p-4`}>
+        <p className={`max-w-[40%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 rounded-lg ${currentUserId === userId? ' rounded-br-none' : ' rounded-bl-none'}`}>
         {content}
         </p>
       </m.div>

@@ -3,14 +3,21 @@ import Head from "next/head";
 import { SessionProvider, useSession } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
+import { configureAbly } from "@ably-labs/react-hooks";
 import "~/styles/globals.css";
 import Sidebar from "~/components/ui/Sidebar";
+
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
   
+const prefix = process.env.NEXTAUTH_URL ?? "";
+
+const clientId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+configureAbly({ authUrl: `${prefix}/api/createTokenRequest?clientId=${clientId}`, clientId: clientId });
+
   return (
     <SessionProvider session={session}>
       <Head>

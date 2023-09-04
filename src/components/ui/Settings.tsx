@@ -82,6 +82,9 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
         setUser({...user, name: userName, description: newDescription})
     }
 
+    const handleLogOut = async () => {
+        await signOut({redirect: false, callbackUrl: "/"});
+    }
     return (
         <>
         <div className={`${isOpen? 'translate-x-0' : '-translate-x-full'} absolute inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 overflow-x-hidden  dark:bg-indigo-900 bg-pink-200 border-r-2 border-black`}>
@@ -93,7 +96,7 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
              <div className="p-2 flex flex-col gap-2 ">
                 <div className=" flex flex-row gap-2">
                     <Button
-                    onClick={() => {void signOut(); void router.push('/')}}
+                    onClick={() => void handleLogOut()}
                     text="Sing out"
                     className="w-fit"
                     />

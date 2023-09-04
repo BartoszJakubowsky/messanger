@@ -12,36 +12,32 @@ import { prisma } from "~/server/db";
 export const conversationRouter = createTRPCRouter({
     
     getConversation: protectedProcedure
-    .input(z.object({ userId: z.string().optional(), conversationId: z.string().optional() }))
-    .query(async ({ input: { userId }, ctx }) => {
+    .input(z.object({convUserId: z.string()}))
+    .query(async ({input: {convUserId}, ctx }) => {
        
-        // const conversation = await ctx.prisma.conversation.findUnique({
-        //   where : {
-        //     id: conversationId
-        //   },
-        //   select: {
-        //     participants: true,
-        //     messages: true
-        //   }
-        // })
-        // console.log(conversation);
-        // return conversation;
-        const currentUserId = ctx.session?.user.id;
-        const user1Id = currentUserId;
-        const user2Id = userId;
-        // Check if a conversation between the two users already exists
-        const existingConversation = await ctx.prisma.conversation.findFirst({
-            where: {
-                AND: [
-                    { participants: { some: { id: user1Id } } },
-                    { participants: { some: { id: user2Id } } },
-                ],
-            },
-        });
+      const userId = ctx.session.user.id;
 
-        if (existingConversation)
-          return existingConversation;
+      const user1Id = ctx.session?.user.id;
+      const user2Id = convUserId;
 
+
+      const userConversation = await ctx.prisma.user.findUnique({
+        where: {
+          id: userId
+        }}).conversations({
+        where: {
+          AND: [
+              { participants: { some: { id: user1Id } } },
+              { participants: { some: { id: user2Id } } },
+          ],
+        },
+        })
+        
+        if (userConversation)
+        {
+          if (userConversation[0]?.id)
+            return userConversation[0].id; 
+        }
         // Create a new conversation with empty messages array
         const newConversation = await prisma.conversation.create({
             data: {
@@ -51,10 +47,11 @@ export const conversationRouter = createTRPCRouter({
             },
             include: {
                 messages: true,
+                participants: true
             },
         });
 
-        return newConversation;
+        return newConversation.id;
     }),
     infiniteMessage: protectedProcedure
     .input(z.object({
@@ -65,7 +62,7 @@ export const conversationRouter = createTRPCRouter({
         createdAt: z.date(),
       }).optional(),
     }))
-    .query(async ({input: {limit = 10 , cursor, conversationId }, ctx }) => {
+    .query(async ({input: {limit = 20 , cursor, conversationId }, ctx }) => {
 
       const recentMessages = await ctx.prisma.conversation.findUnique({
         where: { id: conversationId },
@@ -122,7 +119,6 @@ export const conversationRouter = createTRPCRouter({
     .query(async ({input: {limit = 10 , cursor }, ctx }) => {
 
       const userId = ctx.session.user.id;
-
       const recentConversations = await ctx.prisma.user.findUnique({
         where: { id: userId },
       }).conversations({
@@ -193,5 +189,39 @@ export const conversationRouter = createTRPCRouter({
       });
 
       return createdMessage
-    })
+    }),
+    matchConversation: protectedProcedure
+    .input(z.object({userInConv: z.string()}))
+    .query(async ({input: {userInConv }, ctx }) => {
+
+      if (userInConv == '')
+        return null;
+
+      const userId = ctx.session.user.id;
+      const matchedConversations = await ctx.prisma.user.findUnique({
+        where: {
+          id: userId
+        }  
+      }).conversations({
+        select: {
+          participants: {
+            where: {
+              OR: [
+                {
+                  name: {
+                    contains: userInConv,
+                  },
+                },
+                {
+                  name: {
+                    equals: userInConv,
+                  },
+                },
+              ],
+            },
+          }
+        }
+      })
+      return matchedConversations;
+    }),
 });

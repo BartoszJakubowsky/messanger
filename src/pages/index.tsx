@@ -11,7 +11,6 @@ export default function Home() {
     Loading...
   </div>
   )
-
   if (!sessionData)
     return (
     <div className="flex flex-col items-center justify-center gap-4 w-full relative overflow-hidden">

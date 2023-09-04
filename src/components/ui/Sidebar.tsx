@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react"
 import {motion as m} from 'framer-motion';
 import { api } from "~/utils/api";
-import ConversationUser from './ConversationUser'
+import UserPanel from './UserPanel'
 import { useSession } from "next-auth/react";
 import InfiniteConversationsList from "./InfiniteConversationList";
 import InputText from "../inputs/inputText";
 import Settings from "./Settings";
 import Button from "./button";
 import Modal from "./Modal";
-import {GoSearch, GoX} from 'react-icons/go';
+import {GoSearch, GoX, GoPeople, GoNote} from 'react-icons/go';
 import { useRouter } from "next/router";
 export default function Sidebar() {
     
@@ -17,6 +17,7 @@ export default function Sidebar() {
     const [isOpen, setIsOpen] = useState(true);
     const [search, setSearch] = useState('')
     const [openSearch, setOpenSearch] = useState(false);
+    const [searchConv, setSearchConv] = useState(true);
     const [openSettings, setOpenSettings] = useState(false);
     const [modalSave, setModalSave] = useState(false);
     const [modalDelete, setModalDelete] = useState(false);
@@ -27,7 +28,7 @@ export default function Sidebar() {
     const mutateUserSave =  api.userRouter.updateUser.useMutation({
       onSuccess: (newUser) => {
         setUser(newUser)
-        router.reload();
+      router.reload();
       }
     })
 
@@ -75,21 +76,25 @@ export default function Sidebar() {
                 <div className="flex justify-stretch gap-2 overflow-hidden w-full">
                     <div className="w-full flex gap-2">
                         {!openSearch 
-                        ? <Button className="w-10 flex items-center justify-center" onClick={handleOpenSearch} text={<GoSearch/>}/>
+                        ? <Button className="w-10 h-10 flex items-center justify-center" onClick={handleOpenSearch} text={<GoSearch/>}/>
                         :<>
+                        <div className="flex justify-between gap-2 h-10">
                         <Button className="w-10 flex items-center justify-center" onClick={handleOpenSearch} text={<GoX/>}/>
+                        <Button className="w-10 flex items-center justify-center" text={searchConv?  <GoPeople/> : <GoNote/> } onClick={()=> setSearchConv(!searchConv)}/>
+                        </div>
                         <InputText 
                         value={search}
                         onChange={(event)=>setSearch(event.target.value)}
                         className="w-full rounded-xl"
-                        placeholder="Search for someone"/>
+                        autoFocus={true}
+                        placeholder={`${searchConv? 'Search for conversation' : 'Find a user'}`}/>
                         </>
                         }
                     </div>
                 </div>
-            {!openSearch ? 
+            {searchConv ? 
             
-            <RecentConversations/>
+            <RecentConversations searchConv={search} />
             :
             <m.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration: 0.2}} exit={{opacity:0}} className="flex justify-start my-4 gap-1 flex-wrap">
                 <GetUser userName={search}/>
@@ -113,35 +118,38 @@ function GetUser({ userName }: { userName: string}) {
 
   const { data: matchedUsers, isLoading, isError } = api.userRouter.matchedUsers.useQuery({content: userName});
 
-  if (isError) return <div>Error, pls try later</div>
+  if (isError) return <h3 className="w-full text-center mt-10">Error, pls try later</h3>
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <h3 className="w-full text-center mt-10">Loading...</h3>;
 
-  if (matchedUsers?.length === 0) return <p>Not found!</p>
+  if (matchedUsers?.length === 0) return <h3 className="w-full text-center mt-10">No users found!</h3>
   
   if (matchedUsers)
-    return matchedUsers.map(user =><ConversationUser  key={user.id} user={user}/>
+    return matchedUsers.map(user =><UserPanel  key={user.id} user={user}/>
   )
   
 }
 
 
-function RecentConversations() {
+function RecentConversations({searchConv} : {searchConv: string}) {
 
+  const matchConversations = api.conversation.matchConversation.useQuery({userInConv: searchConv});
   const conversations = api.conversation.infiniteConversations.useInfiniteQuery(
     {}, 
     {getNextPageParam: (lastScrollPage) => lastScrollPage.nextCursor});
-    
+
+  const matchedConversations = searchConv.length > 0 ? matchConversations : false;
+
   if (conversations.data?.pages == 0)
-      return <h1 className="w-full text-center">No conversations yet!</h1>
+      return <h1 className="w-full text-center mt-10">No conversations yet!</h1>
     
   return (
     <InfiniteConversationsList
-      data={conversations.data?.pages.flatMap(conversationsArr => conversationsArr.conversations)}
-      isError={conversations.isError}
-      isLoading={conversations.isLoading}
-  hasMore={conversations.hasNextPage}
-    fetchNewData={conversations.fetchNextPage}
+      data={searchConv.length > 0 ? matchedConversations.data : conversations.data?.pages.flatMap(conversationsArr => conversationsArr.conversations)}
+      isError={searchConv.length > 0 ? matchedConversations.isError : conversations.isError}
+      isLoading={searchConv.length > 0 ? matchedConversations.isLoading : conversations.isLoading}
+      hasMore={searchConv.length > 0 ? undefined :conversations.hasNextPage}
+      fetchNewData={searchConv.length > 0 ? undefined : conversations.fetchNextPage}
     />
   )
 }
