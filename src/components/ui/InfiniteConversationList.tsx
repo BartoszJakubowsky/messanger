@@ -43,12 +43,21 @@ export default function InfiniteConversationsList({
 
 
   return (
+    <div id="scrollableDiv" 
+    style={{
+      height: '100%',
+      overflow: 'auto',
+      display: "flex",
+      flexDirection: 'column'
+    }}
+    >
     <InfiniteScroll
       dataLength={data.length}
       next={fetchNewData}
       hasMore={hasMore ?? false}
       loader={"Loading ..."}
       className="mt-2 flex flex-wrap gap-2"
+      scrollableTarget="scrollableDiv"
     >
       {data.map((dataToRender, index) => {
         if (dataToRender.participants.length == 0)
@@ -64,6 +73,7 @@ export default function InfiniteConversationsList({
         );
       })}
     </InfiniteScroll>
+    </div>
   );
 }
 
@@ -105,7 +115,7 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
           </div>
           {lastMessage && <div className="w-full flex gap-1 ml-2 text-sm opacity-80">
             <p>{lastMessage.user.name} :</p>
-            <p>{truncateText(lastMessage.content, 32)}</p>
+            <p>{truncateText(lastMessage.content, 26)}</p>
           </div>}
         </m.div>
       </Link>

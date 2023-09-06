@@ -3,7 +3,7 @@ import { useEffect, useMemo } from "react";
 
 const ably = new Ably.Realtime.Promise({ authUrl: "/api/createTokenRequest.js" });
 
-export function useChannel(channelName, callbackOnMessage) {
+export function useChannel(channelName : string, callbackOnMessage : (msg: Ably.Types.Message) => void) {
 
   const chanelNameState = useMemo(()=>{
     if (!channelName)
@@ -18,8 +18,8 @@ export function useChannel(channelName, callbackOnMessage) {
 
   const channel = ably.channels.get(channelName);
 
-  const onMount = () => {
-    channel.subscribe((msg) => {
+  const onMount = async() => {
+    await channel.subscribe((msg) => {
       callbackOnMessage(msg);
     });
   };

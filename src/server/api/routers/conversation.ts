@@ -35,7 +35,7 @@ export const conversationRouter = createTRPCRouter({
         
         if (userConversation)
         {
-          if (userConversation[0]?.id)
+          if (userConversation[0]?.id && userConversation[0].id !== undefined)
             return userConversation[0].id; 
         }
         // Create a new conversation with empty messages array
@@ -79,7 +79,7 @@ export const conversationRouter = createTRPCRouter({
       });
 
       if (recentMessages == null)
-        return false;
+        return [];
 
       let nextCursor: typeof cursor | undefined;
       if (recentMessages.length > limit) {

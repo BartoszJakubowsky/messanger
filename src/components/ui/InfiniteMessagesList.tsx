@@ -1,8 +1,10 @@
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSession } from "next-auth/react";
-import type {ReactNode} from 'react';
+import {useState, useRef, useEffect, type ReactNode} from 'react';
 import {motion as m} from 'framer-motion';
-
+import { useChannel } from "@ably-labs/react-hooks";
+import { loadGetInitialProps } from "next/dist/shared/lib/utils";
+import type {Types} from 'ably';
 
 interface MessagesProps {
   id: string
@@ -19,7 +21,6 @@ interface InfiniteMessagesListProps {
   fetchNewData: () => Promise<unknown>;
   data?: MessagesProps[];
   noData? : string;
-  ablyMessages: MessagesProps[]
 }
 
 export default function InfiniteMessagesList({
@@ -29,8 +30,31 @@ export default function InfiniteMessagesList({
   fetchNewData,
   hasMore,
   noData,
-  ablyMessages
 }: InfiniteMessagesListProps) {
+
+
+
+  const [websocketMessage, setWebsocketMessage] = useState<MessagesProps | null>(null);
+  const [dataToRender, setDataToRender] = useState<MessagesProps[] | undefined>(data)
+  
+  const [channel] = useChannel(`conversationChanel`, (message: Types.Message) => {
+
+    if (message.data) setWebsocketMessage(message.data as MessagesProps);
+  })
+  const newMessage = useRef<HTMLDivElement | null>(null);
+  
+  useEffect(() => {
+    if (newMessage?.current && websocketMessage)
+      newMessage.current.scrollIntoView({behavior: 'auto'});
+  }, [websocketMessage]);
+  useEffect(()=> {
+    setDataToRender(data);
+  },[data])
+
+  useEffect(()=> {
+    if(dataToRender && websocketMessage)
+      setDataToRender([websocketMessage, ...dataToRender]);
+  }, [websocketMessage])
 
   if (isLoading) return <h1>Loading...</h1>;
 
@@ -42,15 +66,6 @@ export default function InfiniteMessagesList({
       <h2 className="my-4 text-2xl text-gray-500">{noData}</h2>
     );
   }
-
-  if (ablyMessages)
-  {
-    if (!data.some(message => message.id == ablyMessages.id))
-      data = [ablyMessages, ...data]
-
-  }
-    
-
   return (
     <div id="scrollableDiv" 
     style={{
@@ -69,15 +84,20 @@ export default function InfiniteMessagesList({
       loader={"Loading ..."}
       scrollableTarget="scrollableDiv"
     >
-      {data.map((dataToRender, index) => {
-        return (
+      {/* empty div to enable scroll after received message */}
+      <div ref={newMessage}></div> 
+      {dataToRender?.map((message, index) => {
+      return (
           <Message 
-          key={dataToRender.id} 
-          userId={dataToRender.userId} 
-          content={dataToRender.content} 
-          index={index}/>
+          key={message.id} 
+          userId={message.userId} 
+          content={message.content} 
+          index={index}
+          initial={index== 0 && false}
+          />
         );
       })}
+      {/* empty div to enable scroll at the bottom when new message arrive */}
     </InfiniteScroll>
     </div>
   );
@@ -88,17 +108,18 @@ export default function InfiniteMessagesList({
 
 
 
-function Message ({userId, content, index}: {userId: string, content: string, index: number}) {
+function Message ({userId, content, index, initial = true}: {userId: string, content: string, index?: number, initial?: boolean}) {
 
     const currentUser = useSession();
     const currentUserId = currentUser.data?.user.id;
     return (
       <m.div 
-      initial={{opacity: 0}}
+      // initial makes illusion last message wasn't rerender during refetch data from prisma
+      initial={initial && {opacity: 0}}
       animate={{opacity: 1}}
-      transition={{delay: index *0.05}}
+      transition={{delay: index? index *0.05 : 0}}
       className={`${currentUserId === userId? 'justify-end' : 'justify-start'} w-full h-fit flex p-4`}>
-        <p className={`max-w-[40%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 rounded-lg ${currentUserId === userId? ' rounded-br-none' : ' rounded-bl-none'}`}>
+        <p className={`max-w-[40%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 whitespace-pre-wrap break-words rounded-lg ${currentUserId === userId? ' rounded-br-none' : ' rounded-bl-none'}`}>
         {content}
         </p>
       </m.div>

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { api } from '~/utils/api';
+import {useEffect} from 'react';
+
 interface UserProps {
     user: {
       id: string
@@ -15,8 +17,9 @@ interface UserProps {
 export default function ConversationUser({user} : UserProps) {
 
     const router = useRouter()
-    const getConvId = api.conversation.getConversation.useQuery({convUserId: user.id});
 
+    const {refetch} = api.conversation.getConversation.useQuery({convUserId: user.id}, {enabled: false})
+      
     const truncateText = (text: string, maxLength: number) => {
         if (text.length <= maxLength) {
           return text;
@@ -24,10 +27,12 @@ export default function ConversationUser({user} : UserProps) {
         return text.slice(0, maxLength) + '...';
       };
     
-
     const handleClick = () => {
-     const convId = getConvId.data;
-     void router.push(`/conversation/${convId}`);
+      void refetch().then(res => {
+
+          const convId = res.data;
+          void router.push(`/conversation/${convId}`)
+      });
     }
     return (
         <m.button
