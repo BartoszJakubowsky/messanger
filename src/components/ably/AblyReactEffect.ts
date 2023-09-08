@@ -11,15 +11,21 @@ export function useChannel(channelName : string, callbackOnMessage : (msg: Ably.
     else 
       return true
   },[channelName])
+  
 
-  console.log(chanelNameState);
+  useEffect(()=> {
+
+    onMount();
+    return () => onUnmount();
+  }, [])
+
   if (!chanelNameState)
     return 
 
   const channel = ably.channels.get(channelName);
 
-  const onMount = async() => {
-    await channel.subscribe((msg) => {
+  const onMount = () => {
+    void channel.subscribe((msg) => {
       callbackOnMessage(msg);
     });
   };
@@ -28,12 +34,7 @@ export function useChannel(channelName : string, callbackOnMessage : (msg: Ably.
     channel.unsubscribe();
   };
   
-  useEffect(()=> {
-    onMount();
-    return () => {
-      onUnmount();
-    };
-  }, [])
+
 
 
   return [channel, ably];

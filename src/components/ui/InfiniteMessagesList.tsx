@@ -3,9 +3,8 @@ import { useSession } from "next-auth/react";
 import {useState, useRef, useEffect, type ReactNode} from 'react';
 import {motion as m} from 'framer-motion';
 import { useChannel } from "@ably-labs/react-hooks";
-import { loadGetInitialProps } from "next/dist/shared/lib/utils";
 import type {Types} from 'ably';
-
+import { useRouter } from "next/navigation";
 interface MessagesProps {
   id: string
   content: string;
@@ -20,7 +19,6 @@ interface InfiniteMessagesListProps {
   hasMore: boolean | undefined;
   fetchNewData: () => Promise<unknown>;
   data?: MessagesProps[];
-  noData? : string;
 }
 
 export default function InfiniteMessagesList({
@@ -29,16 +27,15 @@ export default function InfiniteMessagesList({
   isLoading,
   fetchNewData,
   hasMore,
-  noData,
 }: InfiniteMessagesListProps) {
 
 
 
   const [websocketMessage, setWebsocketMessage] = useState<MessagesProps | null>(null);
   const [dataToRender, setDataToRender] = useState<MessagesProps[] | undefined>(data)
+  const router = useRouter();
   
   const [channel] = useChannel(`conversationChanel`, (message: Types.Message) => {
-
     if (message.data) setWebsocketMessage(message.data as MessagesProps);
   })
   const newMessage = useRef<HTMLDivElement | null>(null);
@@ -56,19 +53,17 @@ export default function InfiniteMessagesList({
       setDataToRender([websocketMessage, ...dataToRender]);
   }, [websocketMessage])
 
-  if (isLoading) return <h1>Loading...</h1>;
+  if (isLoading) return <h1 className="m-auto">Loading...</h1>;
 
-  if (isError) return <h1>Error</h1>;
+  if (isError) return <h1 className="m-auto">Error</h1>;
 
 
-  if (data == null || data.length == 0) {
-    return (
-      <h2 className="my-4 text-2xl text-gray-500">{noData}</h2>
-    );
-  }
+  if (data == null || data.length == 0)
+    return <h1 className="m-auto">Conversation does not exist!</h1>;
+
   return (
     <div id="scrollableDiv" 
-    style={{
+  style={{
       height: '100vh',
       overflow: 'auto',
       display: "flex",

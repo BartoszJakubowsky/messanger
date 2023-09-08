@@ -1,18 +1,20 @@
 import InfiniteScroll from "react-infinite-scroll-component";
-import Link from "next/link";
 import {motion as m} from 'framer-motion';
 import Image from "next/image";
+import { useRouter } from "next/router";
 interface UserProps {
       id: string,
       name: string | null;
-      image: string ;
+      image: string;
 }
 
 interface ConversationsProps {
- conversationId: string, 
+ id: string, 
  lastMessage?: {content: string, user: UserProps},
  createdAt?: string,
  participants: UserProps[];
+ closeSidebar : ()=> void;
+
 }
 
 interface InfiniteConversationsListProps {
@@ -21,6 +23,7 @@ interface InfiniteConversationsListProps {
   hasMore: boolean | undefined;
   fetchNewData: () => Promise<unknown>;
   data?: ConversationsProps[];
+  closeSidebar : ()=> void;
 }
 
 export default function InfiniteConversationsList({
@@ -29,7 +32,9 @@ export default function InfiniteConversationsList({
   isLoading,
   fetchNewData,
   hasMore,
+  closeSidebar
 }: InfiniteConversationsListProps) {
+
 
   if (isLoading) return <h1>Loading...</h1>;
 
@@ -37,7 +42,7 @@ export default function InfiniteConversationsList({
 
   if (data == null || data.length == 0) {
     return (
-      <h2 className="my-4 text-start text-2xl text-gray-500">no data</h2>
+      <h2 className="my-4 text-2xl text-center">No conversations found!</h2>
     );
   }
 
@@ -50,6 +55,7 @@ export default function InfiniteConversationsList({
       display: "flex",
       flexDirection: 'column'
     }}
+    className="no-scrollbar"
     >
     <InfiniteScroll
       dataLength={data.length}
@@ -59,16 +65,17 @@ export default function InfiniteConversationsList({
       className="mt-2 flex flex-wrap gap-2"
       scrollableTarget="scrollableDiv"
     >
-      {data.map((dataToRender, index) => {
+      {data.map((dataToRender) => {
         if (dataToRender.participants.length == 0)
           return 
         
         return (
           <ConversationPanel
-            key={dataToRender.conversationId}
-            conversationId={dataToRender.conversationId}
+            key={dataToRender.id}
+            id={dataToRender.id}
             lastMessage={dataToRender.lastMessage}
             participants={dataToRender.participants}
+            closeSidebar={closeSidebar}
           />
         );
       })}
@@ -79,7 +86,7 @@ export default function InfiniteConversationsList({
 
 
 
-function ConversationPanel ({conversationId, lastMessage, createdAt, participants} : ConversationsProps) {
+function ConversationPanel ({id: conversationId, lastMessage, participants, closeSidebar} : ConversationsProps) {
 
    const truncateText = (text: string, maxLength: number) => {
         if (text.length <= maxLength) {
@@ -87,14 +94,20 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
         }
         return text.slice(0, maxLength) + '...';
       };
+    const router = useRouter();
+
+    const onClick = () => {
+      closeSidebar();
+      void router.push(`/conversation/${conversationId}`);
+    }
     return (
-      <Link href={`/conversation/${conversationId}`} className="w-full">
+      <button onClick={onClick} className="w-full">
         <m.div 
         initial={{opacity:0}} 
         animate={{opacity:1}} 
         transition={{duration: 0.2}}  
         exit={{opacity:0}} 
-        className="flex-col w-full h-20 p-2 justify-stretch items-start gap-1 overflow-hidden bg-pink-300 dark:bg-indigo-900 rounded-md cursor-pointer flex">
+        className="flex-col w-full h-20 p-2 justify-stretch items-start gap-1 overflow-hidden  dark:bg-indigo-900 rounded-md cursor-pointer flex">
           <div className="p-1 h-8 overflow-hidden flex gap-2">
             {participants.map((user, index) => {
               //if max users to show
@@ -118,7 +131,7 @@ function ConversationPanel ({conversationId, lastMessage, createdAt, participant
             <p>{truncateText(lastMessage.content, 26)}</p>
           </div>}
         </m.div>
-      </Link>
+      </button>
     )
 }
 

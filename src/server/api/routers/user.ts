@@ -3,7 +3,6 @@
 import { object, z } from "zod";
 import {
   createTRPCRouter,
-  publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
 import { prisma } from "~/server/db";

@@ -35,17 +35,19 @@ export default function Home() {
 
   return (
     <div className="w-full flex justify-center items-center">
-      <div className="relative z-0">
+      <div className="relative z-0 w-3/4 ">
       <Image 
         src={MainImage} 
         width={3000}
-        height={1000}
+        height={2000}
         alt="main image" 
         loading="lazy" 
         placeholder="blur"
+        className=" rounded-3xl "
+
         />
-        <span className="absolute  w-full h-8 -top-1 bg-gradient-to-b dark:from-indigo-900 dark:via-indigo-900 dark:to-transparent"/>
-        <span className="absolute  w-full h-8 -bottom-1 bg-gradient-to-t dark:from-indigo-900 dark:via-indigo-900 dark:to-transparent"/>
+        <span className="absolute  w-full h-8 -top-5 bg-gradient-to-b dark:from-indigo-900 dark:via-indigo-900 dark:to-transparent"/>
+        <span className="absolute  w-full h-8 -bottom-5 bg-gradient-to-t dark:from-indigo-900 dark:via-indigo-900 dark:to-transparent"/>
         </div>
     </div>
   );

@@ -163,7 +163,7 @@ export const conversationRouter = createTRPCRouter({
       return {
         conversations: recentConversations.map((conversation) => {
           return {
-            conversationId: conversation.id,
+            id: conversation.id,
             lastMessage: conversation.messages[0],
             createdAt: conversation.createdAt,
             participants: conversation.participants
@@ -195,17 +195,13 @@ export const conversationRouter = createTRPCRouter({
     .query(async ({input: {userInConv }, ctx }) => {
 
       if (userInConv == '')
-        return null;
+        return [];
 
       const userId = ctx.session.user.id;
-      const matchedConversations = await ctx.prisma.user.findUnique({
+      const matchedConversations = await ctx.prisma.conversation.findMany({
         where: {
-          id: userId
-        }  
-      }).conversations({
-        select: {
           participants: {
-            where: {
+            some: {
               OR: [
                 {
                   name: {
@@ -219,9 +215,27 @@ export const conversationRouter = createTRPCRouter({
                 },
               ],
             },
-          }
+          },
+        },
+        select: {
+          id: true,
+          participants: true,
+          messages: {
+            take: 1,
+            orderBy: { createdAt: 'desc' },
+            select: {
+              content: true,
+              user: true,
+            },
+          },
+        },
+      });
+      return matchedConversations?.map(conversation => {
+        return {
+          id: conversation.id,
+          lastMessage: conversation.messages[0],
+          participants: conversation.participants
         }
       })
-      return matchedConversations;
     }),
 });

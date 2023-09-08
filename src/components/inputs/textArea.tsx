@@ -18,7 +18,7 @@ export default function TextArea() {
 
     return (
         <textarea
-          className="flex-grow resize-none overflow-hidden p-4 outline-none bg-red-300 max-h-[200px]"
+          className="flex-grow resize-none overflow-hidden p-4 outline-none max-h-[200px]"
           ref={textAreaInputRef}
           placeholder="what's happening"
           style={{ height: 0}}

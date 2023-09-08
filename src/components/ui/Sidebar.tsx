@@ -23,8 +23,8 @@ export default function Sidebar() {
     const [modalDelete, setModalDelete] = useState(false);
 
     const [user, setUser] = useState(sessionData?.user);
-    
 
+    const closeSidebar = () => setIsOpen(false);
     const mutateUserSave =  api.userRouter.updateUser.useMutation({
       onSuccess: (newUser) => {
         setUser(newUser)
@@ -37,6 +37,7 @@ export default function Sidebar() {
         router.reload();
       }
     });
+    
     
     useEffect(()=> {
         setUser(sessionData?.user)
@@ -66,7 +67,7 @@ export default function Sidebar() {
         <Modal isOpen={modalSave} setIsOpen={setModalSave} onClick={saveChanges}  modalText="Are you sure you want to save changes?" noButton="No, go back" yesButton="Yes, save" onlyButton={false}/>
         <Modal isOpen={modalDelete} setIsOpen={setModalDelete} onClick={deleteUser}  modalText="Are you sure you want to delete the account?" noButton="No, go back" yesButton="Yes, delete" onlyButton={false}/>
         <Button onClick={()=> setIsOpen(!isOpen)} text="Menu" className="absolute left-1 top-1"/>
-        <nav className={`${isOpen? 'w-full md:w-[615px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
+        <nav className={`${isOpen? 'w-fit md:w-[615px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
           <div className="max-w-[350px] min-w-[350px]">
                 <div className="flex flex-row justify-between mb-2">
                     <Button text='Back' className="w-20" onClick={()=>setIsOpen(!isOpen)}/>
@@ -94,10 +95,10 @@ export default function Sidebar() {
                 </div>
             {searchConv ? 
             
-            <RecentConversations searchConv={search} />
+            <RecentConversations searchConv={search} closeSidebar={closeSidebar} />
             :
             <m.div initial={{opacity:0}} animate={{opacity:1}} transition={{duration: 0.2}} exit={{opacity:0}} className="flex justify-start my-4 gap-1 flex-wrap">
-                <GetUser userName={search}/>
+                <GetUser userName={search} closeSidebar={closeSidebar}/>
             </m.div>
             }
             <Settings 
@@ -114,7 +115,7 @@ export default function Sidebar() {
     )
 };
 
-function GetUser({ userName }: { userName: string}) {
+function GetUser({ userName, closeSidebar }: { userName: string, closeSidebar: () => void}) {
 
   const { data: matchedUsers, isLoading, isError } = api.userRouter.matchedUsers.useQuery({content: userName});
 
@@ -125,13 +126,11 @@ function GetUser({ userName }: { userName: string}) {
   if (matchedUsers?.length === 0) return <h3 className="w-full text-center mt-10">No users found!</h3>
   
   if (matchedUsers)
-    return matchedUsers.map(user =><UserPanel  key={user.id} user={user}/>
-  )
+    return matchedUsers.map(user => <UserPanel closeSidebar={closeSidebar} key={user.id} user={user}/>)
   
 }
 
-
-function RecentConversations({searchConv} : {searchConv: string}) {
+function RecentConversations({searchConv, closeSidebar} : {searchConv: string, closeSidebar: () => void}) {
 
   const matchConversations = api.conversation.matchConversation.useQuery({userInConv: searchConv});
   const conversations = api.conversation.infiniteConversations.useInfiniteQuery(
@@ -150,6 +149,7 @@ function RecentConversations({searchConv} : {searchConv: string}) {
       isLoading={searchConv.length > 0 ? matchedConversations.isLoading : conversations.isLoading}
       hasMore={searchConv.length > 0 ? undefined :conversations.hasNextPage}
       fetchNewData={searchConv.length > 0 ? undefined : conversations.fetchNextPage}
+      closeSidebar={closeSidebar}
     />
   )
 }

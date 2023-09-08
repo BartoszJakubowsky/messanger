@@ -1,14 +1,11 @@
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Button from "./button";
 import InputText from "../inputs/inputText";
 import { useState } from "react";
-import Modal from "./Modal";
-import { api } from "~/utils/api";
 import Switch from "./Switch";
 import {type SetStateAction} from 'react';
-import { useRouter } from "next/router";
 interface UserProps {
-    name?: string | null | undefined;
+    name: string;
     email?: string | null | undefined;
     image?: string | null | undefined;
     id: string;
@@ -32,7 +29,6 @@ interface SettingsProps {
 export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSave, user, setUser} : SettingsProps) {
     const [userName, setUserName] = useState(user.name);
     const [description, setDescription] = useState(user.description);
-    const router = useRouter();
     
     const getInitialTheme = () => {
 
@@ -88,7 +84,7 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
     return (
         <>
         <div className={`${isOpen? 'translate-x-0' : '-translate-x-full'} absolute inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 overflow-x-hidden  dark:bg-indigo-900 bg-pink-200 border-r-2 border-black`}>
-            <div className="flex gap-2 justify-between bg-pink-100 dark:bg-indigo-700 p-2 border-b-2 border-black">
+            <div className="flex gap-2 justify-between  dark:bg-indigo-700 p-2 border-b-2 border-black">
             <Button className="w-20" onClick={() => setIsOpen(!isOpen)} text={'go back'}/>
              <h1 className=" text-2xl mt-auto mb-auto overflow-hidden text-slate-100 text-center">{user?.name}</h1>
             <Button className='w-20' onClick={() => handleSaveClick()} text={'Save changes'}/>
@@ -117,7 +113,7 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
                 </label>
                 <InputText className="w-36 rounded-sm" value={description} onChange={(event)=>handleDescriptionChange(event.target.value)}/>
              </div>
-             <Button className='self-end mt-auto w-20 dark:bg-red-950 bg-red-400' onClick={() => handleDeleteClick()} text={'Delete account'}/>
+             <Button className='self-end mt-auto w-20 dark:bg-red-950 ' onClick={() => handleDeleteClick()} text={'Delete account'}/>
         </div>
         </>
     )

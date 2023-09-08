@@ -2,17 +2,22 @@ import { api } from "~/utils/api"
 import { useRouter } from 'next/router';
 import {useState } from "react";
 import InfiniteMessagesList from "~/components/ui/InfiniteMessagesList";
-
 import { useChannel } from "@ably-labs/react-hooks";
+import { useSession } from "next-auth/react";
 
 export default function ConversationPage() {
 
   const router = useRouter();
   const { id } = router.query;
- 
+  const { data: sessionData } = useSession();
 
   if (!id || Array.isArray(id))
-    return;
+    return 
+
+  
+  if (!sessionData?.user)
+    void router.push('/');
+
   const conversationId = id;
     
     return (
@@ -70,7 +75,7 @@ function TextArea({conversationId}: {conversationId: string}) {
         {conversationId},
         {getNextPageParam: (lastScrollPage) => {
           if (Array.isArray(lastScrollPage))
-            return undefined;
+            return null;
           else
             return lastScrollPage.nextCursor;
         }});
@@ -93,7 +98,6 @@ function TextArea({conversationId}: {conversationId: string}) {
         isLoading={messages.isLoading}
         hasMore={messages.hasNextPage}
         fetchNewData={messages.fetchNextPage}
-        noData={'No conversations'}
       />
     );
   }

@@ -19,10 +19,10 @@ export default function Switch ({onClick, initial,children, className} : SwitchP
     }
   
     return (
-      <div className={` ${className}  w-20 h-8 border-2 dark:border-indigo-300 border-pink-300 flex ${isOn? 'justify-end' : 'justify-start'} items-center cursor-pointer rounded-3xl p-2 "`} 
+      <div className={` ${className}  w-20 h-8 border-2 dark:border-indigo-300 flex ${isOn? 'justify-end' : 'justify-start'} items-center cursor-pointer rounded-3xl p-2 "`} 
       onClick={toggleSwitch}
       >
-        <m.div className={`w-6 h-6 ${isOn? 'dark:bg-indigo-700 bg-pink-500' : 'bg-pink-300 dark:bg-indigo-500'} cursor-pointer rounded-3xl`} layout transition={spring}/>
+        <m.div className={`w-6 h-6 ${isOn? 'dark:bg-indigo-700 ' : ' dark:bg-indigo-500'} cursor-pointer rounded-3xl`} layout transition={spring}/>
         {children}
       </div>
     );

@@ -5,7 +5,7 @@ interface InputTextProps {
     onChange: ChangeEventHandler<HTMLInputElement>;
     className?: string; 
     placeholder?: string; 
-    autoFocus: boolean;
+    autoFocus?: boolean;
 }
 
 const InputText: React.FC<InputTextProps> = ({value, onChange, className, placeholder, autoFocus = false }) => {
