@@ -14,8 +14,7 @@ interface ConversationsProps {
  createdAt?: string,
  participants: UserProps[];
  closeSidebar : ()=> void;
-
-}
+} 
 
 interface InfiniteConversationsListProps {
   isLoading: boolean;

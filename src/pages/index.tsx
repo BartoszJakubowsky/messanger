@@ -43,7 +43,7 @@ export default function Home() {
         alt="main image" 
         loading="lazy" 
         placeholder="blur"
-        className=" rounded-3xl "
+        className=" rounded-3xl noSelect"
 
         />
         <span className="absolute  w-full h-8 -top-5 bg-gradient-to-b dark:from-indigo-900 dark:via-indigo-900 dark:to-transparent"/>

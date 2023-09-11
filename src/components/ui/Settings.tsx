@@ -5,7 +5,7 @@ import { useState } from "react";
 import Switch from "./Switch";
 import {type SetStateAction} from 'react';
 interface UserProps {
-    name: string;
+    name?: string | null | undefined;
     email?: string | null | undefined;
     image?: string | null | undefined;
     id: string;
@@ -85,7 +85,7 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
         <>
         <div className={`${isOpen? 'translate-x-0' : '-translate-x-full'} absolute inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 overflow-x-hidden  dark:bg-indigo-900 bg-pink-200 border-r-2 border-black`}>
             <div className="flex gap-2 justify-between  dark:bg-indigo-700 p-2 border-b-2 border-black">
-            <Button className="w-20" onClick={() => setIsOpen(!isOpen)} text={'go back'}/>
+            <Button className="w-20" onClick={() => setIsOpen(!isOpen)} text={'Go back'}/>
              <h1 className=" text-2xl mt-auto mb-auto overflow-hidden text-slate-100 text-center">{user?.name}</h1>
             <Button className='w-20' onClick={() => handleSaveClick()} text={'Save changes'}/>
              </div>
@@ -106,7 +106,7 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
                 <label htmlFor="input" className="text-lg font-semibold">
                     Your name
                 </label>
-                <InputText className="w-36 rounded-sm" value={userName} onChange={(event)=>handleNameChange(event.target.value)}/>
+                {userName && <InputText className="w-36 rounded-sm" value={userName} onChange={(event)=>handleNameChange(event.target.value)}/>}
 
                 <label htmlFor="input" className="text-lg font-semibold">
                     Your description

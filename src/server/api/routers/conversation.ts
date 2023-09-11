@@ -90,7 +90,7 @@ export const conversationRouter = createTRPCRouter({
       }
 
       if (recentMessages.length == 0)
-        return [];
+        return false;
       
       return {
         messages: recentMessages.map((messages) => {
@@ -147,7 +147,7 @@ export const conversationRouter = createTRPCRouter({
       });
 
       if (recentConversations == null)
-        return false;
+        return [];
 
       let nextCursor: typeof cursor | undefined;
       if (recentConversations.length > limit) {
@@ -158,7 +158,7 @@ export const conversationRouter = createTRPCRouter({
       }
 
       if (recentConversations.length == 0)
-        return [];
+        return false;
       
       return {
         conversations: recentConversations.map((conversation) => {
@@ -198,7 +198,12 @@ export const conversationRouter = createTRPCRouter({
         return [];
 
       const userId = ctx.session.user.id;
-      const matchedConversations = await ctx.prisma.conversation.findMany({
+    
+      const matchedConversations = await ctx.prisma.user.findUnique({
+        where: {
+          id: userId
+        }
+      }).conversations({
         where: {
           participants: {
             some: {
@@ -229,7 +234,8 @@ export const conversationRouter = createTRPCRouter({
             },
           },
         },
-      });
+      })
+
       return matchedConversations?.map(conversation => {
         return {
           id: conversation.id,

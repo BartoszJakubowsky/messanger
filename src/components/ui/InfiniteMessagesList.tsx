@@ -4,7 +4,6 @@ import {useState, useRef, useEffect, type ReactNode} from 'react';
 import {motion as m} from 'framer-motion';
 import { useChannel } from "@ably-labs/react-hooks";
 import type {Types} from 'ably';
-import { useRouter } from "next/navigation";
 interface MessagesProps {
   id: string
   content: string;
@@ -33,33 +32,35 @@ export default function InfiniteMessagesList({
 
   const [websocketMessage, setWebsocketMessage] = useState<MessagesProps | null>(null);
   const [dataToRender, setDataToRender] = useState<MessagesProps[] | undefined>(data)
-  const router = useRouter();
   
   const [channel] = useChannel(`conversationChanel`, (message: Types.Message) => {
-    if (message.data) setWebsocketMessage(message.data as MessagesProps);
+    if (message.data) 
+        setWebsocketMessage(message.data as MessagesProps);
   })
   const newMessage = useRef<HTMLDivElement | null>(null);
-  
   useEffect(() => {
     if (newMessage?.current && websocketMessage)
       newMessage.current.scrollIntoView({behavior: 'auto'});
   }, [websocketMessage]);
+
   useEffect(()=> {
     setDataToRender(data);
-  },[data])
+  },[data]);
 
   useEffect(()=> {
     if(dataToRender && websocketMessage)
       setDataToRender([websocketMessage, ...dataToRender]);
+
   }, [websocketMessage])
+
 
   if (isLoading) return <h1 className="m-auto">Loading...</h1>;
 
   if (isError) return <h1 className="m-auto">Error</h1>;
 
 
-  if (data == null || data.length == 0)
-    return <h1 className="m-auto">Conversation does not exist!</h1>;
+  if (dataToRender == null || dataToRender.length == 0)
+    return <h1 className="m-auto">{"No messages yet!"}</h1>;
 
   return (
     <div id="scrollableDiv" 
@@ -71,7 +72,7 @@ export default function InfiniteMessagesList({
     }}
     >
     <InfiniteScroll
-      dataLength={data.length}
+      dataLength={dataToRender.length}
       next={fetchNewData}
       inverse={true}
       hasMore={hasMore ?? false}
@@ -114,7 +115,7 @@ function Message ({userId, content, index, initial = true}: {userId: string, con
       animate={{opacity: 1}}
       transition={{delay: index? index *0.05 : 0}}
       className={`${currentUserId === userId? 'justify-end' : 'justify-start'} w-full h-fit flex p-4`}>
-        <p className={`max-w-[40%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 whitespace-pre-wrap break-words rounded-lg ${currentUserId === userId? ' rounded-br-none' : ' rounded-bl-none'}`}>
+        <p className={`max-w-[40%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 whitespace-pre-wrap break-words rounded-lg ${currentUserId === userId? ' rounded-br-none xl:mr-[25%] lg:mr-[20%]' : ' rounded-bl-none lg:ml-[20%] xl:ml-[25%]'}`}>
         {content}
         </p>
       </m.div>

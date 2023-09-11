@@ -10,6 +10,8 @@ import Button from "./button";
 import Modal from "./Modal";
 import {GoSearch, GoX, GoPeople, GoNote} from 'react-icons/go';
 import { useRouter } from "next/router";
+import {IoIosArrowBack, IoIosSettings, IoMdMenu} from 'react-icons/io';
+
 export default function Sidebar() {
     
     const { data: sessionData } = useSession();
@@ -66,13 +68,13 @@ export default function Sidebar() {
         <>
         <Modal isOpen={modalSave} setIsOpen={setModalSave} onClick={saveChanges}  modalText="Are you sure you want to save changes?" noButton="No, go back" yesButton="Yes, save" onlyButton={false}/>
         <Modal isOpen={modalDelete} setIsOpen={setModalDelete} onClick={deleteUser}  modalText="Are you sure you want to delete the account?" noButton="No, go back" yesButton="Yes, delete" onlyButton={false}/>
-        <Button onClick={()=> setIsOpen(!isOpen)} text="Menu" className="absolute left-1 top-1"/>
-        <nav className={`${isOpen? 'w-fit md:w-[615px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
+        <Button onClick={()=> setIsOpen(!isOpen)} text={<IoMdMenu className="m-auto"/>} className="absolute left-1 top-1"/>
+        <nav className={`${isOpen? 'w-fit md:max-w-[366px] md:min-w-[366px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
           <div className="max-w-[350px] min-w-[350px]">
                 <div className="flex flex-row justify-between mb-2">
-                    <Button text='Back' className="w-20" onClick={()=>setIsOpen(!isOpen)}/>
+                    <Button text={<IoIosArrowBack className="m-auto"/>} className="w-20" onClick={()=>setIsOpen(!isOpen)}/>
                     <h1 className=" pointer-events-none text-lg text-slate-100 flex bg-pink-300 dark:bg-indigo-600 p-3 rounded-sm">Dumb messanger</h1>
-                    <Button onClick={handleMenuClick} className="w-20" text={'Settings'}/>
+                    <Button onClick={handleMenuClick} className="w-20 group" text={<IoIosSettings className="m-auto group-hover:animate-spin transition-transform duration-150"/>}/>
                 </div>
                 <div className="flex justify-stretch gap-2 overflow-hidden w-full">
                     <div className="w-full flex gap-2">
@@ -135,20 +137,32 @@ function RecentConversations({searchConv, closeSidebar} : {searchConv: string, c
   const matchConversations = api.conversation.matchConversation.useQuery({userInConv: searchConv});
   const conversations = api.conversation.infiniteConversations.useInfiniteQuery(
     {}, 
-    {getNextPageParam: (lastScrollPage) => lastScrollPage.nextCursor});
+    {getNextPageParam: (lastScrollPage) => {
+      if (Array.isArray(lastScrollPage) || !lastScrollPage)
+        return undefined;
+      else
+        return lastScrollPage.nextCursor;
+    }});
 
   const matchedConversations = searchConv.length > 0 ? matchConversations : false;
 
-  if (conversations.data?.pages == 0)
+  if (!conversations.data?.pages[0])
       return <h1 className="w-full text-center mt-10">No conversations yet!</h1>
     
   return (
     <InfiniteConversationsList
-      data={searchConv.length > 0 ? matchedConversations.data : conversations.data?.pages.flatMap(conversationsArr => conversationsArr.conversations)}
-      isError={searchConv.length > 0 ? matchedConversations.isError : conversations.isError}
-      isLoading={searchConv.length > 0 ? matchedConversations.isLoading : conversations.isLoading}
-      hasMore={searchConv.length > 0 ? undefined :conversations.hasNextPage}
-      fetchNewData={searchConv.length > 0 ? undefined : conversations.fetchNextPage}
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+      data={matchedConversations ? matchedConversations.data : conversations.data?.pages.flatMap(conversationsArr => {
+        if (Array.isArray(conversationsArr) || !conversationsArr)
+          return undefined
+        else
+          return conversationsArr.conversations
+      })}
+      isError={matchedConversations ? matchedConversations.isError : conversations.isError}
+      isLoading={matchedConversations ? matchedConversations.isLoading : conversations.isLoading}
+      hasMore={matchedConversations ? undefined :conversations.hasNextPage}
+      fetchNewData={conversations.fetchNextPage}
       closeSidebar={closeSidebar}
     />
   )
