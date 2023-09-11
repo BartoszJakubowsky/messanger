@@ -5,7 +5,6 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { prisma } from "~/server/db";
 
 export const userRouter = createTRPCRouter({
     updateUser: protectedProcedure
