@@ -4,7 +4,7 @@ import {useState, useEffect, useRef} from "react";
 import InfiniteMessagesList from "~/components/ui/InfiniteMessagesList";
 import { useChannel } from "@ably-labs/react-hooks";
 import { useSession } from "next-auth/react";
-
+import {IoMdSend} from 'react-icons/io'
 export default function ConversationPage() {
 
   const router = useRouter();
@@ -90,7 +90,7 @@ function TextArea({ conversationId }: { conversationId: string }) {
         onClick={handleSubmit}
         className="bg-indigo-950 p-2 rounded-sm self-start lg:mr-auto"
       >
-        Send
+        <IoMdSend className="m-auto"/>
       </button>
     </div>
   );
