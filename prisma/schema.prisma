@@ -11,6 +11,11 @@ datasource db {
     relationMode = "prisma"
 }
 
+// datasource db {
+//     provider = "sqlite"
+//     url      = env("DATABASE_URL")
+// }
+
 model Example {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
@@ -25,12 +30,12 @@ model Account {
     provider                 String
     providerAccountId        String
     refresh_token_expires_in Int? //github 
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
+    refresh_token            String? @db.Text
+    access_token             String? @db.Text
     expires_at               Int?
     token_type               String?
     scope                    String?
-    id_token                 String? // @db.Text
+    id_token                 String? @db.Text
     session_state            String?
     user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

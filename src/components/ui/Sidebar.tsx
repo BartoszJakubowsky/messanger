@@ -69,8 +69,8 @@ export default function Sidebar() {
         <Modal isOpen={modalSave} setIsOpen={setModalSave} onClick={saveChanges}  modalText="Are you sure you want to save changes?" noButton="No, go back" yesButton="Yes, save" onlyButton={false}/>
         <Modal isOpen={modalDelete} setIsOpen={setModalDelete} onClick={deleteUser}  modalText="Are you sure you want to delete the account?" noButton="No, go back" yesButton="Yes, delete" onlyButton={false}/>
         <Button onClick={()=> setIsOpen(!isOpen)} text={<IoMdMenu className="m-auto"/>} className="absolute left-1 top-1"/>
-        <nav className={`${isOpen? 'w-fit md:max-w-[366px] md:min-w-[366px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
-          <div className="max-w-[350px] min-w-[350px]">
+        <nav className={`${isOpen? 'md:w-fit md:max-w-[366px] md:min-w-[366px]  translate-x-0' : 'md:w-0 md:[&>*]:invisible w-full -translate-x-full -ml-4'} z-[1] absolute md:relative inset-0  transition-all duration-150 ease-in-out p-2 flex flex-col gap-2 dark:bg-indigo-800 bg-pink-200 overflow-x-hidden`}>
+          <div className="md:max-w-[350px] md:min-w-[350px]">
                 <div className="flex flex-row justify-between mb-2">
                     <Button text={<IoIosArrowBack className="m-auto"/>} className="w-20" onClick={()=>setIsOpen(!isOpen)}/>
                     <h1 className=" pointer-events-none text-lg text-slate-100 flex bg-pink-300 dark:bg-indigo-600 p-3 rounded-sm">Dumb messanger</h1>
