@@ -106,7 +106,7 @@ export default function Settings({isOpen, setIsOpen, setModalDelete, setModalSav
                 <label htmlFor="input" className="text-lg font-semibold">
                     Your name
                 </label>
-                {userName && <InputText className="w-36 rounded-sm" value={userName} onChange={(event)=>handleNameChange(event.target.value)}/>}
+                <InputText className="w-36 rounded-sm" value={userName ?? ''} onChange={(event)=>handleNameChange(event.target.value)}/>
 
                 <label htmlFor="input" className="text-lg font-semibold">
                     Your description
