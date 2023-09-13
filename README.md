@@ -9,5 +9,6 @@ This is a simple app to get used to with [T3 Stack](https://create.t3.gg/) and i
 - [**tRPC**](https://trpc.io/)
 - [**Prisma**](https://www.prisma.io/)
 - [**NextAuth**](https://next-auth.js.org/)
+- [**Ably**](https://ably.com/)
 
 Due to way of work applications like messenger, i implemented  [**Ably**](https://ably.com/) for real time messages experience 💬
