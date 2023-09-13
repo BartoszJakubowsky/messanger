@@ -115,7 +115,7 @@ function Message ({userId, content, index, initial = true}: {userId: string, con
       animate={{opacity: 1}}
       transition={{delay: index? index *0.05 : 0}}
       className={`${currentUserId === userId? 'justify-end' : 'justify-start'} w-full h-fit flex p-4`}>
-        <p className={`max-w-[48%] w-[250px] bg-pink-700 dark:bg-indigo-700 p-2 whitespace-pre-wrap break-words rounded-lg ${currentUserId === userId? ' rounded-br-none xl:mr-[25%] lg:mr-[20%]' : ' rounded-bl-none lg:ml-[20%] xl:ml-[25%]'}`}>
+        <p className={`max-w-[60%] w-fit bg-pink-700 dark:bg-indigo-700 p-2 whitespace-pre-wrap break-words rounded-lg ${currentUserId === userId? ' rounded-br-none xl:mr-[25%] lg:mr-[20%]' : ' rounded-bl-none lg:ml-[20%] xl:ml-[25%]'}`}>
         {content}
         </p>
       </m.div>
