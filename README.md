@@ -1,9 +1,8 @@
 # [Dumb Messanger](https://www.dumbmessanger.pl/)
 
-![DumbMessanger-1](https://github.com/BartoszJakubowsky/messanger/assets/110412160/a046f0f4-7d1c-4f31-afa3-13a9e2dc7c6c)
+![DumbMessanger-1](https://github.com/BartoszJakubowsky/messanger/assets/110412160/9b4bd0d3-6516-474b-afa0-a76c8550d26d)
 
 ## App
-
 Of course you can type messages to other users with real time results 😏
 
 App supports authentication through _Discord_, _Google_ and _Github_
