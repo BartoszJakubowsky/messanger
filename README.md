@@ -1,6 +1,6 @@
 # Dumb Messanger
 <p class="center">
-  <img src="https://github.com/BartoszJakubowsky/messanger/assets/110412160/0b616ee1-1791-4dc7-98fa-2bf2d39a0ec6" alt="dumb messanger image"/>
+  <img src="https://github.com/BartoszJakubowsky/messanger/assets/110412160/e1cddad7-31fd-4330-a887-29c6c63d75af" alt="dumb messanger image"/>
 </p>
 
 This is a simple app to get used to with [T3 Stack](https://create.t3.gg/) and it's technologies:
