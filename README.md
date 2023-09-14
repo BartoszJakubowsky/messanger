@@ -1,7 +1,6 @@
 # Dumb Messanger
-<p class="center">
-  <img src="https://github.com/BartoszJakubowsky/messanger/assets/110412160/e1cddad7-31fd-4330-a887-29c6c63d75af" alt="dumb messanger image"/>
-</p>
+
+![DumbMessanger-1](https://github.com/BartoszJakubowsky/messanger/assets/110412160/a046f0f4-7d1c-4f31-afa3-13a9e2dc7c6c)
 
 This is a simple app to get used to with [T3 Stack](https://create.t3.gg/) and it's technologies:
 - [**TypeScript**](https://www.typescriptlang.org/),
@@ -11,4 +10,4 @@ This is a simple app to get used to with [T3 Stack](https://create.t3.gg/) and i
 - [**NextAuth**](https://next-auth.js.org/)
 - [**Ably**](https://ably.com/)
 
-Due to way of work applications like messenger, i implemented  [**Ably**](https://ably.com/) for real time messages experience 💬
+Due to way of work messanger's like applications, i implemented  [**Ably**](https://ably.com/) for real time messages experience 💬
