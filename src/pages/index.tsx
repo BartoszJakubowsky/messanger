@@ -19,7 +19,7 @@ export default function Home() {
         src={MainImage} 
         className="sm:scale-100 scale-125 w-full"  
         width={2000}
-        alt="main image" 
+        alt="Because there's not enough of them..." 
         loading="lazy" 
         placeholder="blur"
         />
@@ -27,7 +27,7 @@ export default function Home() {
          className="absolute sm:bottom-4 -bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-10 z-[1] py-3 font-semibold text-white no-underline transition hover:bg-white/20"
          onClick={() => void signIn()}
        >
-         {sessionData ? "Sign out" : "Sign in"}
+         {sessionData ? "Sign out" : "Sign in now!"}
        </button>
        </div>
      </div>
