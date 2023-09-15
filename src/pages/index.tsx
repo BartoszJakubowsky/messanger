@@ -38,12 +38,12 @@ export default function Home() {
       <div className="relative z-0 w-3/4 ">
       <Image 
         src={MainImage} 
-        width={3000}
-        height={2000}
+        width={12000}
+        height={9000}
         alt="main image" 
         loading="lazy" 
         placeholder="blur"
-        className=" rounded-3xl noSelect"
+        className=" rounded-3xl noSelect lg:w-[70%] m-auto"
 
         />
         <span className="absolute  w-full h-8 -top-5 bg-gradient-to-b dark:from-indigo-900 dark:via-indigo-900 dark:to-transparent"/>
