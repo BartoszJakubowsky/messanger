@@ -16,7 +16,7 @@ export default function ConversationPage() {
 
   const [files, setFiles] = useState<File[] | []>([]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     noClick: true,
     noKeyboard: true,
     onDrop: (newFiles) => {
@@ -59,6 +59,7 @@ export default function ConversationPage() {
         conversationId={conversationId}
         files={files}
         setFiles={setFiles}
+        openDialog={open}
       />
     </div>
   );

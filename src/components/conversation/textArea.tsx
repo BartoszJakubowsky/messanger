@@ -8,16 +8,18 @@ import IconFile from "../../../public/icon_file.png";
 import IconPDF from "../../../public/icon_pdf.png";
 import IconWord from "../../../public/icon_word.png";
 import IconTxt from "../../../public/icon_txt.png";
-import { IoMdSend, IoMdClose } from "react-icons/io";
-
+import { IoMdSend, IoMdClose, IoMdAttach } from "react-icons/io";
+import FilePreview from "./filePreview";
 export default function TextArea({
   conversationId,
   files,
   setFiles,
+  openDialog,
 }: {
   conversationId: string;
   files: File[];
   setFiles: Dispatch<SetStateAction<[] | File[]>>;
+  openDialog: () => void;
 }) {
   const [text, setText] = useState("");
 
@@ -87,110 +89,34 @@ export default function TextArea({
           </div>
         </div>
       )}
-      <div className="relative  flex w-full flex-wrap items-stretch gap-2 self-end bg-indigo-700 p-2">
-        {files.length > 0 && (
-          <div className="flex h-28 w-full justify-start gap-2 overflow-x-auto overflow-y-hidden border-b-2 border-indigo-950 border-opacity-30 bg-indigo-700  p-1 pl-2 lg:justify-center ">
-            {files.map((file, index) => {
-              const fileExtension = (filePath: string) => {
-                const splittedText = filePath.split(".");
-                return splittedText[splittedText.length - 1];
-              };
-
-              const fileIcon = () => {
-                const extension = fileExtension(file.path);
-                switch (extension) {
-                  case "pdf":
-                    return IconPDF;
-                  case "docx":
-                    return IconWord;
-                  case "txt":
-                    return IconTxt;
-                  case "jpg":
-                  case "png":
-                  case "svg":
-                  case "gif":
-                  case "webp":
-                    return file.preview;
-                  default:
-                    return IconFile;
-                }
-              };
-
-              const handleImageClick = (src: string) => {
-                setFullScreenImage(src);
-              };
-
-              const deleteFile = (id: string) => {
-                setFiles(files.filter((file) => file.id !== id));
-              };
-
-              const verifyFullPageImage = (filePath: string) => {
-                const fullPageFileExtensions = [
-                  "jpg",
-                  "png",
-                  "svg",
-                  "gif",
-                  "webp",
-                ];
-
-                const extension = fileExtension(filePath);
-
-                if (extension && fullPageFileExtensions.includes(extension))
-                  return true;
-                return false;
-              };
-
-              console.log(file);
-              return (
-                <div
-                  className="relative min-w-[80px] max-w-[80px] cursor-pointer overflow-hidden rounded-md bg-indigo-800"
-                  key={index}
-                >
-                  <div className="relative m-auto h-[55%] w-[75%] overflow-hidden  rounded-md p-1">
-                    <Image
-                      onClick={
-                        verifyFullPageImage(file.path)
-                          ? () => handleImageClick(file.preview)
-                          : undefined
-                      }
-                      className="rounded-md"
-                      src={fileIcon()}
-                      alt="file image"
-                      fill
-                      // Revoke data uri after image is loaded
-                      // onLoad={() => { URL.revokeObjectURL(file.preview) }}
-                    />
-                  </div>
-                  <h3
-                    className="z-[2] bg-indigo-800 p-1 text-sm transition-transform duration-1000 ease-in-out hover:-translate-y-[70%]"
-                    onClick={() => handleImageClick(file.preview)}
-                  >
-                    {file.name}
-                  </h3>
-                  <IoMdClose
-                    onClick={() => deleteFile(file.id)}
-                    className="absolute right-[2px] top-[2px] cursor-pointer rounded-full  bg-red-950 text-slate-100"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-        <div className=" flex w-full flex-nowrap">
+      <div className="relative  mt-1 flex w-full flex-wrap items-stretch gap-2 self-end bg-indigo-700 p-2">
+        <FilePreview
+          files={files}
+          setFiles={setFiles}
+          setFullScreenImage={setFullScreenImage}
+        />
+        <div className="flex w-full flex-nowrap">
           <textarea
             ref={textRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="max-h-[80px] min-h-[80px] w-full resize-none rounded p-2 text-black outline-none transition-all duration-200 dark:bg-indigo-400 dark:focus:bg-indigo-300 lg:ml-auto lg:w-[60%]"
+            className="mx-2 max-h-[80px] min-h-[80px] w-full resize-none rounded p-2 text-black outline-none transition-all duration-200 dark:bg-indigo-400 dark:focus:bg-indigo-300 lg:ml-auto lg:w-[60%]"
           />
-          <button
-            onClick={handleSubmit}
-            className="self-start rounded-sm bg-indigo-950 p-2 lg:mr-auto"
-          >
-            <IoMdSend className="m-auto" />
-          </button>
+          <div className="flex flex-wrap lg:mr-auto">
+            <button
+              onClick={handleSubmit}
+              className="w-full self-start rounded-sm bg-indigo-950 p-2"
+            >
+              <IoMdSend className="m-auto" />
+            </button>
+            <button
+              onClick={openDialog}
+              className="w-full self-start rounded-sm bg-indigo-950 p-2"
+            >
+              <IoMdAttach className="m-auto" />
+            </button>
+          </div>
         </div>
-        {/* <IoIosAttach className="m-auto"/> */}
       </div>
     </>
   );
