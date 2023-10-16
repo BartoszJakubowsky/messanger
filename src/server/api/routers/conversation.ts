@@ -244,4 +244,11 @@ export const conversationRouter = createTRPCRouter({
         }
       })
     }),
+    // example input
+    // uploadFiles: protectedProcedure
+    // .input(z.object({name: z.string()}))
+    // .mutation(async ({input: {name}, ctx}) => {
+
+    // })
+
 });

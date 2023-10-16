@@ -70,13 +70,13 @@ export default function FilePreview({
               return false;
             };
 
-            console.log(file);
             return (
               <div
-                className="relative min-w-[80px] max-w-[80px] cursor-pointer overflow-hidden rounded-md bg-indigo-800"
+                className="relative min-w-[80px] max-w-[80px] cursor-pointer  overflow-hidden rounded-md border-slate-500 bg-indigo-800"
                 key={index}
+                // onClick={() => handleImageClick(file.preview)}
               >
-                <div className="relative m-auto h-[55%] w-[75%] overflow-hidden  rounded-md p-1">
+                <div className="relative m-auto h-[80%] w-full  rounded-md p-1">
                   <Image
                     onClick={
                       verifyFullPageImage(file.path)
@@ -91,12 +91,13 @@ export default function FilePreview({
                     // onLoad={() => { URL.revokeObjectURL(file.preview) }}
                   />
                 </div>
-                <h3
-                  className="z-[2] bg-indigo-800 p-1 text-sm transition-transform duration-1000 ease-in-out hover:-translate-y-[70%]"
-                  onClick={() => handleImageClick(file.preview)}
-                >
-                  {file.name}
-                </h3>
+                <div className="  overflow-hidden">
+                  <h3
+                    className={`z-[2] w-full flex-none overflow-hidden bg-indigo-800   px-1 transition-transform duration-1000 ease-in-out hover:-translate-x-full `}
+                  >
+                    {file.name}
+                  </h3>
+                </div>
                 <IoMdClose
                   onClick={() => deleteFile(file.id)}
                   className="absolute right-[2px] top-[2px] cursor-pointer rounded-full  bg-red-950 text-slate-100"
